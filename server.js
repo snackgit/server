@@ -1,23 +1,38 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const models = require("./models");
 const multer = require('multer');
+
+// 업로드 폴더 경로
+const uploadDir = path.join(__dirname, 'uploads');
+
+// 서버 시작 시 uploads 디렉토리 생성
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+  console.log('uploads 폴더가 생성되었습니다.');
+}
+
+// Multer 설정
 const upload = multer({ 
     storage: multer.diskStorage({
-        destination: function(req,file,cb){
+        destination: function(req, file, cb) {
             cb(null, 'uploads/');
         },
-        filename: function (req, file, cb) {
-            cb ( null, file.originalname);
+        filename: function(req, file, cb) {
+            cb(null, file.originalname);
         },
     }),
 });
+
 const port = 8080;
 
 app.use(express.json());
 app.use(cors());
 
+// 상품 목록 조회
 app.get("/products", (req, res) => {
   models.Product.findAll({
     order: [['createdAt', 'DESC']],
@@ -33,6 +48,7 @@ app.get("/products", (req, res) => {
   });
 });
 
+// 상품 생성
 app.post("/products", (req, res) => {
   const body = req.body;
   const { name, description, price, seller } = body;
@@ -56,6 +72,7 @@ app.post("/products", (req, res) => {
   });
 });
 
+// 특정 상품 조회
 app.get("/products/:id", (req, res) => {
   const { id } = req.params;
   models.Product.findOne({
@@ -74,6 +91,7 @@ app.get("/products/:id", (req, res) => {
   });
 });
 
+// 이미지 업로드
 app.post('/image', upload.single('image'), (req, res) => {
   const file = req.file;
   console.log(file);
@@ -82,6 +100,7 @@ app.post('/image', upload.single('image'), (req, res) => {
   });
 });
 
+// 서버 시작
 app.listen(port, () => {
   console.log("달콤 스낵 노마드의 서버가 돌아가고 있습니다.");
   models.sequelize.sync().then(() => {

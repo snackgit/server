@@ -8,38 +8,33 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/products",(req,res) => {
-    const query =req.query;
-    console.log("QUERY :" , query);
-    res.send({
-      products: [
-            {
-                "id": 1,
-                "name": "하리보 골든바렌구미",
-                "price": 1900,
-                "seller": "달콤스낵노마드",
-                "imageUrl": "images/products/jelly.jpeg"
-            },
-            {
-                "id": 2,
-                "name": "가루쿡 햄버거 포춘쿠키",
-                "price": 4500,
-                "seller": "달콤스낵노마드",
-                "imageUrl": "images/products/ham.jpeg"
-            },
-            {
-                "id": 3,
-                "name": "카스가이 라카아메 땅콩사탕",
-                "price": 2800,
-                "seller": "달콤스낵노마드",
-                "imageUrl": "images/products/candy.jpeg"
-            },
-        ],
-    });
+    models.Product.findAll({
+        order:[
+            ['createdAt','DESC']],
+            attributes:[
+                'id',
+                'name',
+                'price',
+                'createdAt',
+                'seller'
+            ],
+    }).then((result)=>{
+        console.log("PRODUCTS: ",result);
+        res.send({
+            products: result
+        })
+    }).catch((error)=>{
+        console.error(error);
+        res.send("에러 발생");
+    })
 });
 
 app.post("/products",(req,res) => {
     const body = req.body;
     const {name,description, price, seller} =body;
+    if(!name || !description || !price || !seller){
+        res.send("모든 필드를 입력해주세요");
+    }
     models.Product.create({
         name,
         description,
@@ -56,11 +51,23 @@ app.post("/products",(req,res) => {
         res.send("상품 업로드에 문제가 발생했습니다");
     });
 });
-app.get("/products/:id/events/:eventId", (req,res) =>{
+app.get("/products/:id", (req,res) =>{
     const params = req.params;
-    const {id,eventId} = params;
-    res.send(`id는 ${id}와 ${eventId}입니다`);
-})
+    const {id} = params;
+    models.Product.findOne({
+        where:{
+            id:id
+        }
+    }).then((result)=>{
+        console.log("PRODUCT: ",result);
+        res.send({
+            product:result,
+        });
+    }).catch((error)=>{
+        console.error(error);
+        res.send("상품 조회에 에러가 발생했습니다.");
+    });
+});
 
 app.listen(port,() => {
     console.log("달콤 스낵 노마드의 서버가 돌아가고 있습니다.");

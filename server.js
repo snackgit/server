@@ -46,6 +46,7 @@ app.get("/products", (req, res) => {
       "seller",
       "imageUrl",
       "soldout",
+      "category"
     ],
   })
     .then((result) => {
@@ -62,12 +63,13 @@ app.get("/products", (req, res) => {
 
 app.post("/products", (req, res) => {
   const body = req.body;
-  const { name, description, price, seller, imageUrl } = body;
-  if (!name || !description || !price || !seller || !imageUrl) {
+  const { name, description, price, seller, imageUrl, category } = body;
+  if (!name || !description || !price || !seller || !imageUrl || !category) {
     res.status(400).send("모든 필드를 입력해주세요");
+    return;
   }
   detectProduct(imageUrl, (type) => {
-    models.Product.create({ description, price, seller, imageUrl, name, type })
+    models.Product.create({ name, description, price, seller, imageUrl, type, category })
       .then((result) => {
         console.log("상품 생성 결과 : ", result);
         res.send({

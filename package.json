@@ -17,5 +17,8 @@
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.9"
   }
 }

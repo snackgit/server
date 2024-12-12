@@ -1,16 +1,12 @@
-# fly.toml app configuration file generated for snack-server on 2024-12-09T19:47:30+09:00
+# fly.toml app configuration file generated for serversnack on 2024-12-12T15:48:29Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'snack-server'
-primary_region = 'nrt'
+app = 'serversnack'
+primary_region = 'sin'
 
 [build]
-
-[[mounts]]
-  source = 'data'
-  destination = '/data'
 
 [http_service]
   internal_port = 3000
@@ -24,3 +20,4 @@ primary_region = 'nrt'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 1024
